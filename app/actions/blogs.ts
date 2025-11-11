@@ -95,6 +95,84 @@ export async function createBlog(data: Omit<BlogInsert, "slug" | "author">) {
   return { data: blog }
 }
 
+// Get blogs by current user
+export async function getUserBlogs() {
+  const supabase = await createClient()
+  
+  // Check authentication
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: "Unauthorized" }
+  }
+
+  // Get user email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile) {
+    return { data: [] }
+  }
+
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .eq("author", profile.email)
+    .order("created_at", { ascending: false })
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  return { data: data || [] }
+}
+
+// Get dashboard statistics
+export async function getDashboardStats() {
+  const supabase = await createClient()
+  
+  // Check authentication
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: "Unauthorized" }
+  }
+
+  // Get user email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile) {
+    return { 
+      data: {
+        totalPosts: 0,
+        totalViews: 0,
+        comments: 0,
+        followers: 0
+      }
+    }
+  }
+
+  // Get total posts
+  const { count: totalPosts } = await supabase
+    .from("blogs")
+    .select("*", { count: "exact", head: true })
+    .eq("author", profile.email)
+
+  return {
+    data: {
+      totalPosts: totalPosts || 0,
+      totalViews: 0, // TODO: Add views tracking
+      comments: 0, // TODO: Add comments tracking
+      followers: 0 // TODO: Add followers tracking
+    }
+  }
+}
+
 // Get all blogs
 export async function getBlogs() {
   const supabase = await createClient()
@@ -111,35 +189,79 @@ export async function getBlogs() {
   return { data }
 }
 
-// Get a single blog by slug
+// Get a single blog by slug (only for current user)
 export async function getBlogBySlug(slug: string) {
   const supabase = await createClient()
   
+  // Check authentication
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: "Unauthorized" }
+  }
+
+  // Get user email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile) {
+    return { error: "User profile not found" }
+  }
+
   const { data, error } = await supabase
     .from("blogs")
     .select("*")
     .eq("slug", slug)
+    .eq("author", profile.email)
     .single()
 
   if (error) {
     return { error: error.message }
   }
 
+  if (!data) {
+    return { error: "Blog not found or you don't have access to it" }
+  }
+
   return { data }
 }
 
-// Get a single blog by ID
+// Get a single blog by ID (only for current user)
 export async function getBlogById(id: string) {
   const supabase = await createClient()
   
+  // Check authentication
+  const { data: { user } } = await supabase.auth.getUser()
+  if (!user) {
+    return { error: "Unauthorized" }
+  }
+
+  // Get user email
+  const { data: profile } = await supabase
+    .from("profiles")
+    .select("email")
+    .eq("id", user.id)
+    .single()
+
+  if (!profile) {
+    return { error: "User profile not found" }
+  }
+
   const { data, error } = await supabase
     .from("blogs")
     .select("*")
     .eq("id", id)
+    .eq("author", profile.email)
     .single()
 
   if (error) {
     return { error: error.message }
+  }
+
+  if (!data) {
+    return { error: "Blog not found or you don't have access to it" }
   }
 
   return { data }

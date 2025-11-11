@@ -1,11 +1,11 @@
 import { BlogCard } from "@/components/blog-card"
-import { getBlogs } from "@/app/actions/blogs"
+import { getUserBlogs } from "@/app/actions/blogs"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus } from "lucide-react"
 
 export default async function BlogsPage() {
-  const { data: blogs, error } = await getBlogs()
+  const { data: blogs, error } = await getUserBlogs()
 
   if (error) {
     return (

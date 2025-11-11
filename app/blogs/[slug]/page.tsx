@@ -27,7 +27,8 @@ export default async function BlogDetailPage({ params }: BlogDetailPageProps) {
     ? await supabase.from("profiles").select("email").eq("id", user.id).single()
     : { data: null }
 
-  const isAuthor = user && profile && profile.email === blog.author
+  // Since getBlogBySlug now only returns user's own blogs, user is always the author
+  const isAuthor = true
 
   return (
     <div className="max-w-4xl mx-auto p-6 md:p-8 lg:p-10">
