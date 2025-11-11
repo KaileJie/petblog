@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useRouter } from "next/navigation"
 import { TipTapEditor } from "@/components/tiptap-editor"
 import { Button } from "@/components/ui/button"
@@ -8,17 +8,58 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { createBlog } from "@/app/actions/blogs"
 import { Loader2 } from "lucide-react"
+import { Dropzone, DropzoneContent, DropzoneEmptyState } from "@/components/dropzone"
+import { useSupabaseUpload } from "@/hooks/use-supabase-upload"
+import { createClient } from "@/lib/supabase/client"
 
 export default function NewBlogPage() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [userId, setUserId] = useState<string | null>(null)
   const [formData, setFormData] = useState({
     title: "",
     subtitle: "",
     image: "",
     content: "",
   })
+
+  // Get user ID for organizing uploads
+  useEffect(() => {
+    const getUserId = async () => {
+      const supabase = createClient()
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user) {
+        setUserId(user.id)
+      }
+    }
+    getUserId()
+  }, [])
+
+  // Configure dropzone for blog images
+  const dropzoneProps = useSupabaseUpload({
+    bucketName: 'blog-images',
+    path: userId || undefined,
+    allowedMimeTypes: ['image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/gif'],
+    maxFiles: 1,
+    maxFileSize: 5 * 1024 * 1024, // 5MB
+  })
+
+  // Handle successful upload and get public URL
+  useEffect(() => {
+    if (dropzoneProps.isSuccess && dropzoneProps.successes.length > 0 && userId) {
+      const originalFileName = dropzoneProps.successes[0]
+      const sanitizedFileName = dropzoneProps.uploadedFileNames.get(originalFileName) || originalFileName
+      const supabase = createClient()
+      const { data } = supabase.storage
+        .from('blog-images')
+        .getPublicUrl(`${userId}/${sanitizedFileName}`)
+      
+      if (data && data.publicUrl) {
+        setFormData(prev => ({ ...prev, image: data.publicUrl }))
+      }
+    }
+  }, [dropzoneProps.isSuccess, dropzoneProps.successes, dropzoneProps.uploadedFileNames, userId])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -42,6 +83,9 @@ export default function NewBlogPage() {
       if (result.error) {
         setError(result.error)
       } else {
+        // Reset dropzone after successful submission
+        dropzoneProps.setFiles([])
+        dropzoneProps.setErrors([])
         router.push("/dashboard/blogs")
         router.refresh()
       }
@@ -85,14 +129,36 @@ export default function NewBlogPage() {
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="image">Cover Image URL</Label>
-          <Input
-            id="image"
-            type="url"
-            value={formData.image}
-            onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-            placeholder="https://example.com/image.jpg"
-          />
+          <Label htmlFor="image">Cover Image</Label>
+          <Dropzone {...dropzoneProps} className="w-full">
+            <DropzoneEmptyState />
+            <DropzoneContent />
+          </Dropzone>
+          {formData.image && (
+            <div className="mt-2">
+              <p className="text-xs text-muted-foreground mb-2">Selected image:</p>
+              <div className="relative w-full h-48 rounded-lg overflow-hidden border">
+                <img 
+                  src={formData.image} 
+                  alt="Preview" 
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                className="mt-2"
+                onClick={() => {
+                  setFormData(prev => ({ ...prev, image: "" }))
+                  dropzoneProps.setFiles([])
+                  dropzoneProps.setErrors([])
+                }}
+              >
+                Remove Image
+              </Button>
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">
