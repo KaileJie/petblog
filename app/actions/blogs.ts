@@ -189,6 +189,27 @@ export async function getBlogs() {
   return { data }
 }
 
+// Get a single blog by slug (public, no auth required)
+export async function getPublicBlogBySlug(slug: string) {
+  const supabase = await createClient()
+  
+  const { data, error } = await supabase
+    .from("blogs")
+    .select("*")
+    .eq("slug", slug)
+    .single()
+
+  if (error) {
+    return { error: error.message }
+  }
+
+  if (!data) {
+    return { error: "Blog not found" }
+  }
+
+  return { data }
+}
+
 // Get a single blog by slug (only for current user)
 export async function getBlogBySlug(slug: string) {
   const supabase = await createClient()

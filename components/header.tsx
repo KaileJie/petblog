@@ -22,7 +22,7 @@ export function SiteHeader() {
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
           <Link
-            href="#stories"
+            href="/blogs"
             className="text-sm text-muted-foreground transition-colors hover:text-foreground font-bold"
           >
             Stories
@@ -70,7 +70,7 @@ export function SiteHeader() {
         <div className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-md animate-in slide-in-from-top-2">
           <div className="flex flex-col gap-3 px-4 py-4">
             <Link 
-              href="#stories" 
+              href="/blogs" 
               className="text-base font-medium text-muted-foreground hover:text-foreground py-2 transition-colors"
               onClick={() => setIsOpen(false)}
             >
