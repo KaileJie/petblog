@@ -59,3 +59,36 @@ CREATE TRIGGER on_profile_updated
   BEFORE UPDATE ON public.profiles
   FOR EACH ROW EXECUTE FUNCTION public.handle_updated_at();
 
+-- Create blog policies that reference profiles table
+-- These policies were deferred from the blogs migration since profiles didn't exist yet
+DROP POLICY IF EXISTS "Users can update own blogs" ON public.blogs;
+CREATE POLICY "Users can update own blogs"
+  ON public.blogs
+  FOR UPDATE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.email = blogs.author
+    )
+  )
+  WITH CHECK (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.email = blogs.author
+    )
+  );
+
+DROP POLICY IF EXISTS "Users can delete own blogs" ON public.blogs;
+CREATE POLICY "Users can delete own blogs"
+  ON public.blogs
+  FOR DELETE
+  USING (
+    EXISTS (
+      SELECT 1 FROM public.profiles
+      WHERE profiles.id = auth.uid()
+      AND profiles.email = blogs.author
+    )
+  );
+
