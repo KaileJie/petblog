@@ -43,6 +43,21 @@ function mapSubscriptionStatus(
   return statusMap[stripeStatus] || 'active'
 }
 
+function safeDateFromTimestamp(timestamp: number | null | undefined): string | null {
+  if (!timestamp || typeof timestamp !== 'number' || isNaN(timestamp) || timestamp <= 0) {
+    return null
+  }
+  try {
+    const date = new Date(timestamp * 1000)
+    if (isNaN(date.getTime())) {
+      return null
+    }
+    return date.toISOString()
+  } catch {
+    return null
+  }
+}
+
 function prepareSubscriptionData(
   subscription: Stripe.Subscription,
   userId: string
@@ -53,10 +68,10 @@ function prepareSubscriptionData(
     stripe_subscription_id: subscription.id,
     status: mapSubscriptionStatus(subscription.status),
     price_id: subscription.items.data[0]?.price.id || '',
-    current_period_start: new Date(subscription.current_period_start * 1000).toISOString(),
-    current_period_end: new Date(subscription.current_period_end * 1000).toISOString(),
+    current_period_start: safeDateFromTimestamp(subscription.current_period_start) || new Date().toISOString(),
+    current_period_end: safeDateFromTimestamp(subscription.current_period_end) || new Date().toISOString(),
     cancel_at_period_end: subscription.cancel_at_period_end || false,
-    canceled_at: subscription.canceled_at ? new Date(subscription.canceled_at * 1000).toISOString() : null,
+    canceled_at: safeDateFromTimestamp(subscription.canceled_at),
   }
 }
 
