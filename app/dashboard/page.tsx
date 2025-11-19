@@ -67,6 +67,13 @@ function DashboardContent() {
     // Prevent duplicate checks when no session_id
     if (hasCheckedSessionIdRef.current && !effectiveSessionId) {
       console.log('⏸️  Already checked without session_id, skipping...')
+      setVerifying(false)
+      return
+    }
+    
+    // If we already processed this session_id, skip
+    if (hasCheckedSessionIdRef.current && effectiveSessionId && isProcessingRef.current) {
+      console.log('⏸️  Already processing this session_id, skipping...')
       return
     }
     
@@ -152,13 +159,27 @@ function DashboardContent() {
           }
         }
         
+        // Clear session_id from URL if present (user already has subscription)
+        if (effectiveSessionId && typeof window !== 'undefined') {
+          console.log('🧹 Clearing session_id from URL (subscription already exists)')
+          window.history.replaceState({}, '', '/dashboard')
+        }
+        
         setVerifying(false)
         hasCheckedSessionIdRef.current = true
+        isProcessingRef.current = false
         loadDashboardData()
         return
       }
 
       console.log('🔍 Processing session_id verification:', effectiveSessionId)
+      
+      // Prevent duplicate processing
+      if (isProcessingRef.current) {
+        console.log('⏸️ Already processing, skipping duplicate call')
+        return
+      }
+      
       isProcessingRef.current = true
       setVerifying(true)
       hasCheckedSessionIdRef.current = true
@@ -228,8 +249,13 @@ function DashboardContent() {
                   // Reset refs before redirect
                   isProcessingRef.current = false
                   hasCheckedSessionIdRef.current = true
+                  setVerifying(false)
+                  setVerified(false)
                   // Use window.location.replace to clear URL params and prevent back button issues
-                  window.location.replace('/dashboard')
+                  // Small delay to ensure state is updated before redirect
+                  setTimeout(() => {
+                    window.location.replace('/dashboard')
+                  }, 100)
                   return
                 }
                 
@@ -252,7 +278,11 @@ function DashboardContent() {
                       subscriptionFound = true
                       isProcessingRef.current = false
                       hasCheckedSessionIdRef.current = true
-                      window.location.replace('/dashboard')
+                      setVerifying(false)
+                      setVerified(false)
+                      setTimeout(() => {
+                        window.location.replace('/dashboard')
+                      }, 100)
                       return
                     }
                   }
@@ -277,6 +307,10 @@ function DashboardContent() {
                 isProcessingRef.current = false
                 setVerificationError('Subscription was verified but not found in database. Please refresh the page.')
                 setVerifying(false)
+                // Clear session_id from URL to prevent retry loop
+                if (typeof window !== 'undefined') {
+                  window.history.replaceState({}, '', '/dashboard')
+                }
               }
             } else {
               console.error('❌ User not found')
