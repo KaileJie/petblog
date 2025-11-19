@@ -369,14 +369,16 @@ function DashboardContent() {
 
   if (verifying) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="max-w-md">
-          <CardHeader>
-            <Loader2 className="h-12 w-12 mx-auto mb-4 animate-spin text-primary" />
-            <CardTitle className="text-center">Verifying your subscription...</CardTitle>
-            <CardDescription className="text-center">
-              Please wait while we confirm your payment
-            </CardDescription>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-4 pb-6">
+            <Loader2 className="h-12 w-12 mx-auto animate-spin text-primary" />
+            <div className="space-y-2">
+              <CardTitle className="text-center text-xl">Verifying your subscription...</CardTitle>
+              <CardDescription className="text-center text-sm">
+                Please wait while we confirm your payment
+              </CardDescription>
+            </div>
           </CardHeader>
         </Card>
       </div>
@@ -385,16 +387,18 @@ function DashboardContent() {
 
   if (verified) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-green-500" />
-            <CardTitle className="text-center">Welcome to PawStories Premium!</CardTitle>
-            <CardDescription className="text-center">
-              Your subscription is active. Enjoy all premium features!
-            </CardDescription>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-4 pb-6">
+            <CheckCircle2 className="h-12 w-12 mx-auto text-green-500" />
+            <div className="space-y-2">
+              <CardTitle className="text-center text-xl">Welcome to PawStories Premium!</CardTitle>
+              <CardDescription className="text-center text-sm">
+                Your subscription is active. Enjoy all premium features!
+              </CardDescription>
+            </div>
           </CardHeader>
-          <CardContent>
+          <CardContent className="pt-0">
             <Button 
               className="w-full" 
               onClick={() => {
@@ -412,15 +416,17 @@ function DashboardContent() {
 
   if (verificationError) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
-        <Card className="max-w-md">
-          <CardHeader>
-            <CardTitle className="text-center text-destructive">Verification Failed</CardTitle>
-            <CardDescription className="text-center">
-              {verificationError}
-            </CardDescription>
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="space-y-4 pb-6">
+            <div className="space-y-2">
+              <CardTitle className="text-center text-xl text-destructive">Verification Failed</CardTitle>
+              <CardDescription className="text-center text-sm">
+                {verificationError}
+              </CardDescription>
+            </div>
           </CardHeader>
-          <CardContent className="space-y-2">
+          <CardContent className="pt-0 space-y-2">
             <Button 
               className="w-full" 
               onClick={() => router.push('/dashboard')}
