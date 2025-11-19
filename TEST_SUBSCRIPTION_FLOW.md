@@ -34,7 +34,7 @@
 
 1. **在 Dashboard 页面**（带 session_id）：
    - 应该看到 "Verifying your subscription..."
-   - 然后看到 "Welcome to PetBlog Premium!"
+   - 然后看到 "Welcome to PawStories Premium!"
    - 最后加载 dashboard
 
 2. **预期结果**：

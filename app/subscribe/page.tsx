@@ -184,7 +184,7 @@ export default function SubscribePage() {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl">Subscribe to PetBlog Premium</CardTitle>
+              <CardTitle className="text-3xl">Subscribe to PawStories Premium</CardTitle>
               <CardDescription>
                 Unlock full access to create and manage your blog posts
               </CardDescription>

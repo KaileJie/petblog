@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document provides a step-by-step guide to implement a complete subscription system in the PetBlog Next.js application using Stripe and Supabase. The integration will enable premium access control for the Dashboard features.
+This document provides a step-by-step guide to implement a complete subscription system in the PawStories Next.js application using Stripe and Supabase. The integration will enable premium access control for the Dashboard features.
 
 ## Table of Contents
 
@@ -193,7 +193,7 @@ export * from './subscription'; // Add this line
 
 1. Log in to [Stripe Dashboard](https://dashboard.stripe.com)
 2. Navigate to **Products** → **Add Product**
-3. Create a product (e.g., "PetBlog Premium")
+3. Create a product (e.g., "PawStories Premium")
 4. Add a recurring price:
    - **Price**: $5.99/month
    - **Billing period**: Monthly
@@ -266,7 +266,7 @@ You need **4 different Stripe credentials**:
 #### 2. Get Your Price ID
 
 1. In Stripe Dashboard, go to **Products** (in the left sidebar)
-2. Click on your product (e.g., "PetBlog Premium")
+2. Click on your product (e.g., "PawStories Premium")
 3. Under the product, you'll see your price(s)
 4. Click on the price you want to use
 5. You'll see the **Price ID** at the top (starts with `price_`)
@@ -409,7 +409,7 @@ supabase secrets list
 
 ### Next.js Environment Variables (Client-Side)
 
-**File**: `.env.local` (create this file in your `petblog` directory if it doesn't exist)
+**File**: `.env.local` (create this file in your `pawstories` directory if it doesn't exist)
 
 ```env
 # Stripe Publishable Key (Public - Safe to expose)
@@ -956,7 +956,7 @@ export default function SubscribePage() {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader>
-              <CardTitle className="text-3xl">Subscribe to PetBlog Premium</CardTitle>
+              <CardTitle className="text-3xl">Subscribe to PawStories Premium</CardTitle>
               <CardDescription>
                 Unlock full access to create and manage your blog posts
               </CardDescription>
@@ -1104,7 +1104,7 @@ export default function DashboardPage() {
         <Card className="max-w-md">
           <CardHeader>
             <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-green-500" />
-            <CardTitle className="text-center">Welcome to PetBlog Premium!</CardTitle>
+            <CardTitle className="text-center">Welcome to PawStories Premium!</CardTitle>
             <CardDescription className="text-center">
               Your subscription is active. Enjoy all premium features!
             </CardDescription>

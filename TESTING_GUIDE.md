@@ -53,7 +53,7 @@ supabase db push
 5. 支付完成后：
    - ✅ 应该重定向到 `/dashboard?session_id=cs_test_...`
    - ✅ 应该看到 "Verifying your subscription..." 消息
-   - ✅ 然后看到 "Welcome to PetBlog Premium!" 消息
+   - ✅ 然后看到 "Welcome to PawStories Premium!" 消息
    - ✅ 最后应该显示 dashboard（无重定向循环）
 
 6. 验证数据库：

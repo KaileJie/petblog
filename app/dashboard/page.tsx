@@ -333,7 +333,7 @@ function DashboardContent() {
         <Card className="max-w-md">
           <CardHeader>
             <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-green-500" />
-            <CardTitle className="text-center">Welcome to PetBlog Premium!</CardTitle>
+            <CardTitle className="text-center">Welcome to PawStories Premium!</CardTitle>
             <CardDescription className="text-center">
               Your subscription is active. Enjoy all premium features!
             </CardDescription>

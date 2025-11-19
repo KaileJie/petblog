@@ -144,7 +144,7 @@
 
 **设置建议:**
 - 开发环境: `http://localhost:3000`
-- 生产环境: 你的实际域名（如 `https://petblog.com`）
+- 生产环境: 你的实际域名（如 `https://pawstories.com`）
 
 ---
 

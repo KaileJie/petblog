@@ -68,7 +68,7 @@
 
 5. **查看验证流程**
    - 应该看到 "Verifying your subscription..."
-   - 然后看到 "Welcome to PetBlog Premium!"
+   - 然后看到 "Welcome to PawStories Premium!"
    - 最后重定向到 dashboard
 
 6. **检查数据库**

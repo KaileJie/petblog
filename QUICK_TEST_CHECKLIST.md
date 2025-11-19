@@ -43,7 +43,7 @@ pnpm dev
 4. **验证重定向**
    - ✅ URL 应该是：`/dashboard?session_id=cs_test_...`
    - ✅ 看到 "Verifying your subscription..."
-   - ✅ 然后看到 "Welcome to PetBlog Premium!"
+   - ✅ 然后看到 "Welcome to PawStories Premium!"
    - ✅ 最后显示 dashboard（**无重定向循环**）
 
 5. **检查数据库**

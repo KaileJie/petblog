@@ -65,7 +65,7 @@
    - 返回应用
 
 3. **验证结果**:
-   - 应该看到 "Welcome to PetBlog Premium!" 或重定向到 dashboard
+   - 应该看到 "Welcome to PawStories Premium!" 或重定向到 dashboard
    - 再次访问 `/subscribe` 应该显示 "You're Already Subscribed!"
 
 ## 如果问题仍然存在
