@@ -80,6 +80,12 @@ export default function SubscribePage() {
   }, [router])
 
   const handleSubscribe = async () => {
+    // Prevent multiple simultaneous calls
+    if (loading) {
+      console.log('⏸️ Subscribe already in progress, ignoring duplicate call')
+      return
+    }
+
     setLoading(true)
     setError(null)
 
@@ -102,10 +108,13 @@ export default function SubscribePage() {
         return
       }
 
+      console.log('🔄 Calling stripe-checkout function...')
       // Call Supabase Edge Function to create checkout session
       const { data, error: functionError } = await supabase.functions.invoke('stripe-checkout', {
         body: { priceId },
       })
+      
+      console.log('📥 stripe-checkout response:', { data, error: functionError })
 
       if (functionError) {
         console.error('Function error:', functionError)
