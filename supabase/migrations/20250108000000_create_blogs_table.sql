@@ -33,35 +33,8 @@ CREATE POLICY "Authenticated users can create blogs"
   WITH CHECK (auth.role() = 'authenticated');
 
 -- Create policy: Users can update their own blogs (based on author matching profile)
-CREATE POLICY "Users can update own blogs"
-  ON public.blogs
-  FOR UPDATE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.email = blogs.author
-    )
-  )
-  WITH CHECK (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.email = blogs.author
-    )
-  );
-
--- Create policy: Users can delete their own blogs
-CREATE POLICY "Users can delete own blogs"
-  ON public.blogs
-  FOR DELETE
-  USING (
-    EXISTS (
-      SELECT 1 FROM public.profiles
-      WHERE profiles.id = auth.uid()
-      AND profiles.email = blogs.author
-    )
-  );
+-- Note: Policies that reference profiles will be created after profiles table exists
+-- See migration 20251107141118_create_profiles_table.sql for policy creation
 
 -- Create function to generate slug from title
 CREATE OR REPLACE FUNCTION public.generate_slug(title_text TEXT)
