@@ -72,8 +72,13 @@ function DashboardContent() {
     }
     
     // If we already processed this session_id, skip
-    if (hasCheckedSessionIdRef.current && effectiveSessionId && isProcessingRef.current) {
-      console.log('⏸️  Already processing this session_id, skipping...')
+    if (hasCheckedSessionIdRef.current && effectiveSessionId) {
+      console.log('⏸️  Already processed this session_id, skipping...')
+      // Clear session_id from URL if already processed
+      if (typeof window !== 'undefined' && urlSessionId) {
+        window.history.replaceState({}, '', '/dashboard')
+      }
+      setVerifying(false)
       return
     }
     
@@ -165,7 +170,10 @@ function DashboardContent() {
           window.history.replaceState({}, '', '/dashboard')
         }
         
+        // Reset all verification state
         setVerifying(false)
+        setVerified(false)
+        setVerificationError(null)
         hasCheckedSessionIdRef.current = true
         isProcessingRef.current = false
         loadDashboardData()
@@ -175,13 +183,20 @@ function DashboardContent() {
       console.log('🔍 Processing session_id verification:', effectiveSessionId)
       
       // Prevent duplicate processing
-      if (isProcessingRef.current) {
-        console.log('⏸️ Already processing, skipping duplicate call')
+      if (isProcessingRef.current || hasCheckedSessionIdRef.current) {
+        console.log('⏸️ Already processing or already checked, skipping duplicate call')
+        // Clear session_id from URL if already checked
+        if (typeof window !== 'undefined' && urlSessionId) {
+          window.history.replaceState({}, '', '/dashboard')
+        }
+        setVerifying(false)
         return
       }
       
       isProcessingRef.current = true
       setVerifying(true)
+      setVerified(false)
+      setVerificationError(null)
       hasCheckedSessionIdRef.current = true
 
       try {
@@ -245,17 +260,21 @@ function DashboardContent() {
                 
                 if (subscription) {
                   subscriptionFound = true
-                  console.log('✅ Subscription found in database! Redirecting...')
-                  // Reset refs before redirect
+                  console.log('✅ Subscription found in database!')
+                  // Reset refs and state
                   isProcessingRef.current = false
                   hasCheckedSessionIdRef.current = true
                   setVerifying(false)
                   setVerified(false)
-                  // Use window.location.replace to clear URL params and prevent back button issues
-                  // Small delay to ensure state is updated before redirect
+                  // Clear session_id from URL
+                  if (typeof window !== 'undefined') {
+                    window.history.replaceState({}, '', '/dashboard')
+                  }
+                  // Refresh the page to reload dashboard without session_id
+                  // This ensures clean state
                   setTimeout(() => {
-                    window.location.replace('/dashboard')
-                  }, 100)
+                    window.location.reload()
+                  }, 500)
                   return
                 }
                 
@@ -280,9 +299,14 @@ function DashboardContent() {
                       hasCheckedSessionIdRef.current = true
                       setVerifying(false)
                       setVerified(false)
+                      // Clear session_id from URL
+                      if (typeof window !== 'undefined') {
+                        window.history.replaceState({}, '', '/dashboard')
+                      }
+                      // Refresh the page to reload dashboard without session_id
                       setTimeout(() => {
-                        window.location.replace('/dashboard')
-                      }, 100)
+                        window.location.reload()
+                      }, 500)
                       return
                     }
                   }
@@ -305,6 +329,7 @@ function DashboardContent() {
               if (!subscriptionFound) {
                 console.error('❌ Subscription not found after retries')
                 isProcessingRef.current = false
+                hasCheckedSessionIdRef.current = true
                 setVerificationError('Subscription was verified but not found in database. Please refresh the page.')
                 setVerifying(false)
                 // Clear session_id from URL to prevent retry loop
