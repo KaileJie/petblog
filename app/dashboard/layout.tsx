@@ -14,6 +14,10 @@ export default async function DashboardLayout({
     redirect("/auth/login")
   }
 
+  // Don't check subscription here - let the page component handle it
+  // This allows session_id verification to work properly
+  // The page component will redirect to /subscribe if needed
+
   return <DashboardSidebar>{children}</DashboardSidebar>
 }
 
