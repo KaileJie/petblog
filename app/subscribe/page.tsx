@@ -122,9 +122,10 @@ export default function SubscribePage() {
       } else {
         throw new Error('No checkout URL received from server')
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Subscribe error:', err)
-      setError(err.message || 'Failed to create checkout session. Please try again.')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to create checkout session. Please try again.'
+      setError(errorMessage)
       setLoading(false)
     }
   }
@@ -158,7 +159,7 @@ export default function SubscribePage() {
             <Card>
               <CardHeader>
                 <CheckCircle2 className="h-12 w-12 mx-auto mb-4 text-green-500" />
-                <CardTitle className="text-3xl text-center">You're Already Subscribed!</CardTitle>
+                <CardTitle className="text-3xl text-center">You&apos;re Already Subscribed!</CardTitle>
                 <CardDescription className="text-center">
                   Your subscription is active. Redirecting to dashboard...
                 </CardDescription>
@@ -191,7 +192,7 @@ export default function SubscribePage() {
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-2">
-                <h3 className="text-xl font-semibold">What's included:</h3>
+                <h3 className="text-xl font-semibold">What&apos;s included:</h3>
                 <ul className="list-disc list-inside space-y-1 text-muted-foreground">
                   <li>Create unlimited blog posts</li>
                   <li>Edit and delete your posts</li>

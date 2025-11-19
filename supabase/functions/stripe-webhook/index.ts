@@ -167,8 +167,9 @@ async function handleEvent(event: Stripe.Event) {
               if (!customer.deleted && customer.metadata?.supabase_user_id) {
                 userId = customer.metadata.supabase_user_id
               }
-            } catch (customerError: any) {
-              console.warn(`Could not retrieve customer for subscription ${subscription.id}:`, customerError.message)
+            } catch (customerError: unknown) {
+              const errorMessage = customerError instanceof Error ? customerError.message : 'Unknown error'
+              console.warn(`Could not retrieve customer for subscription ${subscription.id}:`, errorMessage)
             }
           }
 
@@ -276,8 +277,9 @@ async function handleEvent(event: Stripe.Event) {
                   ignoreDuplicates: false,
                 })
             }
-          } catch (stripeError: any) {
-            console.warn(`Could not process payment_failed for subscription ${subscriptionId}:`, stripeError.message)
+          } catch (stripeError: unknown) {
+            const errorMessage = stripeError instanceof Error ? stripeError.message : 'Unknown error'
+            console.warn(`Could not process payment_failed for subscription ${subscriptionId}:`, errorMessage)
           }
           return
         }
@@ -329,8 +331,9 @@ async function handleEvent(event: Stripe.Event) {
             }
 
             console.log(`Creating missing subscription record for invoice ${subscriptionId} with user_id ${userId}`)
-          } catch (stripeError: any) {
-            console.error(`Error retrieving subscription ${subscriptionId}:`, stripeError.message)
+          } catch (stripeError: unknown) {
+            const errorMessage = stripeError instanceof Error ? stripeError.message : 'Unknown error'
+            console.error(`Error retrieving subscription ${subscriptionId}:`, errorMessage)
             return
           }
         }
@@ -362,8 +365,9 @@ async function handleEvent(event: Stripe.Event) {
         // Unhandled event type
         break
     }
-  } catch (error: any) {
-    console.error('Error in handleEvent:', error.message)
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error'
+    console.error('Error in handleEvent:', errorMessage)
   }
 }
 
@@ -429,10 +433,11 @@ Deno.serve(async (req) => {
         signature,
         webhookSecret
       )
-    } catch (err: any) {
-      console.error('Webhook signature verification failed:', err.message)
+    } catch (err: unknown) {
+      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
+      console.error('Webhook signature verification failed:', errorMessage)
       return new Response(
-        JSON.stringify({ error: 'Webhook signature verification failed', message: err.message }),
+        JSON.stringify({ error: 'Webhook signature verification failed', message: errorMessage }),
         { 
           status: 400,
           headers: { 'Content-Type': 'application/json' }
@@ -450,7 +455,7 @@ Deno.serve(async (req) => {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     })
-  } catch (error: any) {
+  } catch (error: unknown) {
     console.error('Unexpected error in stripe-webhook:', error)
     return new Response(
       JSON.stringify({ error: 'Internal error in stripe-webhook' }),

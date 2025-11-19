@@ -56,7 +56,7 @@ export async function createBlog(data: Omit<BlogInsert, "slug" | "author">) {
   }
 
   // Generate slug
-  let slug = generateSlug(data.title)
+  const slug = generateSlug(data.title)
   
   // Check if slug exists and append number if needed
   let counter = 0
@@ -341,9 +341,9 @@ export async function updateBlog(id: string, data: BlogUpdate) {
   }
 
   // If title is being updated, regenerate slug
-  let updateData = { ...data }
+  const updateData = { ...data }
   if (data.title) {
-    let slug = generateSlug(data.title)
+    const slug = generateSlug(data.title)
     
     // Check if slug exists (excluding current blog)
     let counter = 0

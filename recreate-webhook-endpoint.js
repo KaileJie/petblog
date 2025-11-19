@@ -5,6 +5,7 @@
  * This will create a new endpoint with description "Pawstories edge functions"
  */
 
+/* eslint-disable @typescript-eslint/no-require-imports */
 const https = require('https');
 
 const STRIPE_SECRET_KEY = process.env.STRIPE_SECRET_KEY;
@@ -38,7 +39,7 @@ function makeStripeRequest(path, method = 'POST', data = null) {
           } else {
             reject(new Error(`Stripe API error: ${parsed.error?.message || body}`));
           }
-        } catch (e) {
+        } catch {
           reject(new Error(`Failed to parse response: ${body}`));
         }
       });

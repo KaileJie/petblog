@@ -1,7 +1,6 @@
 import PetHero from "@/components/hero";
 import { SiteHeader } from "@/components/header";
 import { getBlogs } from "@/app/actions/blogs";
-import { FeaturedBlogCard } from "@/components/featured-blog-card";
 import { BlogCard } from "@/components/blog-card";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";

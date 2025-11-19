@@ -5,7 +5,6 @@ import { useSearchParams, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Loader2, CheckCircle2 } from 'lucide-react'
-import { BlogCard } from "@/components/blog-card"
 import { Button } from "@/components/ui/button"
 import Link from "next/link"
 import { Plus, FileText, Eye, MessageCircle, Users } from "lucide-react"
@@ -33,9 +32,7 @@ function DashboardContent() {
   const [verifying, setVerifying] = useState(false)
   const [verified, setVerified] = useState(false)
   const [verificationError, setVerificationError] = useState<string | null>(null)
-  const [blogs, setBlogs] = useState<any[]>([])
-  const [stats, setStats] = useState<any>(null)
-  const [loading, setLoading] = useState(true)
+  const [stats, setStats] = useState<{ totalPosts?: number; totalViews?: number; comments?: number; followers?: number } | null>(null)
   
   // Use ref to track if we've already checked session_id (prevents infinite loops)
   const hasCheckedSessionIdRef = useRef(false)
@@ -45,7 +42,6 @@ function DashboardContent() {
   const loadDashboardData = async () => {
     // This would normally be server-side, but for now we'll skip it
     // The layout already handles subscription check
-    setLoading(false)
   }
 
   useEffect(() => {
@@ -298,10 +294,11 @@ function DashboardContent() {
           setVerificationError(data?.error || 'Subscription verification failed')
           setVerifying(false)
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         console.error('Verification error:', err)
         isProcessingRef.current = false
-        setVerificationError(err.message || 'An error occurred while verifying your subscription')
+        const errorMessage = err instanceof Error ? err.message : 'An error occurred while verifying your subscription'
+        setVerificationError(errorMessage)
         setVerifying(false)
       }
     }
@@ -391,7 +388,7 @@ function DashboardContent() {
         <div>
           <h1 className="text-3xl font-bold mb-2">Dashboard</h1>
           <p className="text-muted-foreground">
-            Welcome back! Here's what's happening with your blog.
+            Welcome back! Here&apos;s what&apos;s happening with your blog.
           </p>
         </div>
         <Link href="/dashboard/blogs/new">

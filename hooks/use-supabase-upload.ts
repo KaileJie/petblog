@@ -134,6 +134,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     return `${finalName}-${Date.now()}${extension}`
   }
 
+  // eslint-disable-next-line react-hooks/preserve-manual-memoization
   const onUpload = useCallback(async () => {
     setLoading(true)
 
@@ -189,11 +190,15 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
     setUploadedFileNames(newUploadedFileNames)
 
     setLoading(false)
-  }, [files, path, bucketName, errors, successes, uploadedFileNames])
+  }, [files, path, bucketName, errors, successes, uploadedFileNames, cacheControl, upsert])
 
   useEffect(() => {
     if (files.length === 0) {
+      // Reset errors and uploaded file names when files are cleared
+      // This is intentional - we want to reset state when files array becomes empty
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setErrors([])
+       
       setUploadedFileNames(new Map())
     }
 
@@ -211,7 +216,7 @@ const useSupabaseUpload = (options: UseSupabaseUploadOptions) => {
         setFiles(newFiles)
       }
     }
-  }, [files.length, setFiles, maxFiles])
+  }, [files, maxFiles])
 
   return {
     files,

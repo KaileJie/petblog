@@ -1,5 +1,5 @@
 // 临时测试函数：验证 STRIPE_SECRET_KEY 是否正确加载
-Deno.serve(async (req) => {
+Deno.serve(async () => {
   const key = Deno.env.get('STRIPE_SECRET_KEY')
   
   const result = {

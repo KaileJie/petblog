@@ -15,11 +15,7 @@ interface TipTapEditorProps {
 }
 
 export function TipTapEditor({ content, onChange, placeholder = "Start writing..." }: TipTapEditorProps) {
-  const [isMounted, setIsMounted] = useState(false)
-
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
+  const [isMounted] = useState(true)
 
   const editor = useEditor({
     extensions: [

@@ -89,7 +89,7 @@ export default function NewBlogPage() {
         router.push("/dashboard/blogs")
         router.refresh()
       }
-    } catch (err) {
+    } catch {
       setError("An unexpected error occurred")
     } finally {
       setIsSubmitting(false)

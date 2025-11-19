@@ -231,16 +231,21 @@ Deno.serve(async (req) => {
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
-  } catch (error: any) {
-    console.error('Validation error:', {
-      message: error?.message,
-      stack: error?.stack,
-      name: error?.name,
-    })
+  } catch (error: unknown) {
+    const errorObj = error instanceof Error ? {
+      message: error.message,
+      stack: error.stack,
+      name: error.name,
+    } : {
+      message: 'Unknown error',
+      stack: undefined,
+      name: 'Error',
+    }
+    console.error('Validation error:', errorObj)
     return new Response(
       JSON.stringify({ 
         error: 'An unexpected error occurred',
-        message: error?.message || 'Unknown error',
+        message: errorObj.message,
       }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )

@@ -9,7 +9,7 @@ export function DashboardSearch() {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
-  const [isPending, startTransition] = useTransition()
+  const [, startTransition] = useTransition()
 
   const handleSearch = useCallback(
     (value: string) => {

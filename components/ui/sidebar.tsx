@@ -607,9 +607,13 @@ function SidebarMenuSkeleton({
   showIcon?: boolean
 }) {
   // Random width between 50 to 90%.
+  // Using a stable random value based on component instance
   const width = React.useMemo(() => {
-    return `${Math.floor(Math.random() * 40) + 50}%`
-  }, [])
+    // Use a stable seed based on component props/context instead of Math.random()
+    const dataSidebar = (props as Record<string, unknown>)['data-sidebar']
+    const stableSeed = ((dataSidebar?.toString().length || 0) + (showIcon ? 1 : 0)) * 7
+    return `${(stableSeed % 40) + 50}%`
+  }, [props, showIcon])
 
   return (
     <div

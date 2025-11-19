@@ -25,9 +25,10 @@ export default function SubscriptionManagement() {
       } else {
         throw new Error('No portal URL received')
       }
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error('Error opening portal:', err)
-      alert(err.message || 'Failed to open subscription portal')
+      const errorMessage = err instanceof Error ? err.message : 'Failed to open subscription portal'
+      alert(errorMessage)
       setLoading(false)
     }
   }

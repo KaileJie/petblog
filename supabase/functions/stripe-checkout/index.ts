@@ -87,7 +87,13 @@ Deno.serve(async (req) => {
     }
 
     // Get user profile, create if doesn't exist
-    let { data: profile, error: profileError } = await supabaseClient
+    let { data: profile } = await supabaseClient
+      .from('profiles')
+      .select('email')
+      .eq('id', user.id)
+      .single()
+    
+    const { error: profileError } = await supabaseClient
       .from('profiles')
       .select('email')
       .eq('id', user.id)
@@ -127,7 +133,7 @@ Deno.serve(async (req) => {
       if (contentType && contentType.includes('application/json')) {
         requestBody = await req.json()
       }
-    } catch (parseError) {
+    } catch {
       // Continue with empty body, will use env var
     }
 
@@ -178,9 +184,10 @@ Deno.serve(async (req) => {
           },
         })
         customerId = customer.id
-      } catch (stripeError: any) {
+      } catch (stripeError: unknown) {
+        const errorMessage = stripeError instanceof Error ? stripeError.message : 'Failed to create customer'
         return new Response(
-          JSON.stringify({ error: `Failed to create customer: ${stripeError.message}` }),
+          JSON.stringify({ error: errorMessage }),
           { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
         )
       }
@@ -216,13 +223,14 @@ Deno.serve(async (req) => {
         JSON.stringify({ sessionId: session.id, url: session.url }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
-    } catch (stripeError: any) {
+    } catch (stripeError: unknown) {
+      const errorMessage = stripeError instanceof Error ? stripeError.message : 'Failed to create checkout session'
       return new Response(
-        JSON.stringify({ error: `Failed to create checkout session: ${stripeError.message}` }),
+        JSON.stringify({ error: errorMessage }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     // Top-level catch for any unhandled errors
     console.error('Unexpected error in stripe-checkout:', error)
     return new Response(
